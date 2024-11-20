@@ -10,25 +10,29 @@ const App = () => {
   };
 
   return (
-<div className="p-4">
-  {/* Main Heading */}
-  <header
-    className="text-center mb-8 py-8"
-    style={{ backgroundColor: '#1D4ED8' }} // Dark navy background
-  >
-    <h1
-      className="text-4xl font-bold"
-      style={{ color: '#FFFFFF', fontFamily: 'Helvetica Neue, Arial, sans-serif' }} // Set font family
+    <div
+      className="min-h-screen"
+      style={{
+        backgroundImage: 'linear-gradient(90deg, #1D4ED8, #60A5FA)', // Gradient background
+        backgroundSize: 'cover', // Ensures the background covers the screen
+        backgroundRepeat: 'no-repeat',
+      }}
     >
-      <span style={{ fontWeight: 'bold', fontStyle: 'italic' }}>Elanco</span> Population App
-    </h1>
-    <p className="text-lg mt-2 text-gray-300">
-      Explore population statistics by city and country with ease.
-    </p>
-  </header>
+      {/* Main Heading */}
+      <header className="text-center mb-8 py-8">
+        <h1
+          className="text-4xl font-bold"
+          style={{ color: '#FFFFFF', fontFamily: 'Helvetica Neue, Arial, sans-serif' }}
+        >
+          <span style={{ fontWeight: 'bold', fontStyle: 'italic' }}>Elanco</span> Population App
+        </h1>
+        <p className="text-lg mt-2 text-gray-200">
+          Explore population statistics by city and country with ease.
+        </p>
+      </header>
 
       {/* Main Content */}
-      <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
+      <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4 p-4">
         {/* Country List Section */}
         <div className="md:w-2/3 w-full">
           <CountryList onSelectCountry={handleSelectCountry} />

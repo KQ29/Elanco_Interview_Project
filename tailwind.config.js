@@ -1,9 +1,16 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  // Specify the paths to all your template files
-  content: ['./src/**/*.{js,jsx,ts,tsx}'], // Scans these files to generate utility classes
+  content: ['./src/**/*.{js,jsx,ts,tsx}'],
   theme: {
-    extend: {}, // Placeholder for extending the default Tailwind theme (e.g., adding custom colors or fonts)
+    extend: {
+      colors: {
+        elancoBlue: '#1D4ED8', // Primary blue
+        elancoLightBlue: '#60A5FA', // Lighter blue
+      },
+      backgroundImage: {
+        'elanco-gradient': 'linear-gradient(90deg, #1D4ED8, #60A5FA)', // Gradient from dark to light blue
+      },
+    },
   },
-  plugins: [], // Add plugins here if needed (e.g., forms, typography, aspect ratio)
+  plugins: [],
 };

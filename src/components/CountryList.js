@@ -61,7 +61,7 @@ const CountryList = ({ onSelectCountry }) => {
   return (
     <div className="p-4 w-full md:w-2/3 lg:w-1/2">
       {/* Header */}
-      <h2 className="text-3xl font-bold text-blue-600 mb-4">Country Population</h2>
+      <h2 className="text-3xl font-bold text-white mb-4">Country Population</h2>
 
       {/* Search bar for filtering countries */}
       <input
