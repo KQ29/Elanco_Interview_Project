@@ -71,9 +71,15 @@ const CountryList = ({ onSelectCountry, onSearchChange }) => {
       <input
         type="text"
         placeholder="Search by city or country..."
-        className="w-full p-3 border border-gray-300 rounded-lg mb-4 text-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+        className="w-full p-3 border border-gray-300 rounded-lg mb-4 text-lg focus:outline-none focus:ring-2 focus:ring-blue-400 font-medium capitalize"
         value={searchQuery} // Controlled input bound to `searchQuery` state
-        onChange={(e) => setSearchQuery(e.target.value)} // Update `searchQuery` state on user input
+        onChange={(e) =>
+          setSearchQuery(
+            e.target.value
+              .toLowerCase()
+              .replace(/\b\w/g, (char) => char.toUpperCase()) // Capitalize the first letter of each word
+          )
+        }
       />
 
       {/* Filtered list of countries */}
