@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { getPopulationData, getCountryFlags } from '../api/api';
 
-
 // CountryList component
 // Displays a searchable list of countries with their population and flags
-const CountryList = ({ onSelectCountry }) => {
+const CountryList = ({ onSelectCountry, onSearchChange }) => {
   // State to hold the full list of countries
   const [countries, setCountries] = useState([]);
 
@@ -52,7 +51,12 @@ const CountryList = ({ onSelectCountry }) => {
         country.city.toLowerCase().includes(lowercasedQuery) // Check if city name matches the query
     );
     setFilteredCountries(filtered); // Update the filtered countries list
-  }, [searchQuery, countries]); // Dependencies: Runs when either `searchQuery` or `countries` changes
+
+    // Notify the parent component about the search query
+    if (onSearchChange) {
+      onSearchChange(searchQuery); // Pass the current search query to the parent
+    }
+  }, [searchQuery, countries, onSearchChange]); // Dependencies: Runs when `searchQuery`, `countries`, or `onSearchChange` changes
 
   // Show a loading message if data is still being fetched
   if (loading) return <p className="text-blue-500 text-lg">Loading data...</p>;

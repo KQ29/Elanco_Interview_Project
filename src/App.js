@@ -4,9 +4,18 @@ import PopulationChart from './components/PopulationChart';
 
 const App = () => {
   const [selectedData, setSelectedData] = useState([]);
+  const [isSticky, setIsSticky] = useState(true); // State to control sticky vs. non-sticky behavior
 
   const handleSelectCountry = (country) => {
     setSelectedData([country]);
+  };
+
+  const handleSearchChange = (searchQuery) => {
+    if (searchQuery.trim() === '') {
+      setIsSticky(true); // If no search query, keep the chart sticky
+    } else {
+      setIsSticky(false); // When searching, make the chart non-sticky
+    }
   };
 
   return (
@@ -35,16 +44,21 @@ const App = () => {
       <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4 p-4">
         {/* Country List Section */}
         <div className="md:w-2/3 w-full">
-          <CountryList onSelectCountry={handleSelectCountry} />
+          <CountryList
+            onSelectCountry={handleSelectCountry}
+            onSearchChange={handleSearchChange} // Pass the search handler to CountryList
+          />
         </div>
 
-        {/* Sticky Chart Section */}
+        {/* Chart Section */}
         <div className="md:w-1/3 w-full">
           <div
-            className="sticky"
+            className={isSticky ? 'sticky' : ''} // Apply sticky class when in sticky mode
             style={{
-              top: '50%', // Vertically offset from the top of the viewport
-              transform: 'translate(-250px, -50%)', // Center vertically and shift 250px to the left
+              top: isSticky ? '50%' : 'auto', // Sticky: Vertically offset; Non-sticky: Default positioning
+              transform: isSticky
+                ? 'translate(-250px, -50%)' // Sticky: Center vertically and offset left
+                : 'translate(-250px, 0)', // Non-sticky: Shift 150px left, no vertical offset
               display: 'flex',
               justifyContent: 'center', // Horizontally align the chart
             }}
