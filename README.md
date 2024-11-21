@@ -22,10 +22,6 @@ This project was developed as part of the Software Engineers – Second Intervie
 
 - **Displays population data through a bar chart using Chart.js**.
 
-### Sticky Chart:
-
-- **Keeps the chart visible while scrolling through the country list**.
-
 ### Modern Design:
 
 - **A clean, responsive UI for enhanced usability**.
