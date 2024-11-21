@@ -1,67 +1,72 @@
-import React, { useState, useEffect } from 'react';
-import { getPopulationData, getCountryFlags } from '../api/api';
+// CountryList.js
 
-// CountryList component
-// Displays a searchable list of countries with their population and flags
+import React, { useState, useEffect } from 'react';
+import { fetchCountryData, countryNameMapping } from './CountryUtils'; // Import utility functions and mappings
+
+// CountryList component to display a searchable list of countries with population and flags
 const CountryList = ({ onSelectCountry, onSearchChange }) => {
-  // State to hold the full list of countries
+  // State to hold the full list of countries and their population
   const [countries, setCountries] = useState([]);
 
   // State to hold the mapping of country names to their flag URLs
   const [flags, setFlags] = useState({});
 
-  // State to store the user's search query
+  // State to store the user's search query for filtering
   const [searchQuery, setSearchQuery] = useState('');
 
   // State to hold the filtered list of countries based on the search query
   const [filteredCountries, setFilteredCountries] = useState([]);
 
-  // State to track whether data is being loaded
+  // State to track whether the data is still loading
   const [loading, setLoading] = useState(true);
 
-  // Fetch data when the component is mounted
+  // Fetch country data (population and flags) when the component is mounted
   useEffect(() => {
     const fetchData = async () => {
-      // Fetch population data and update the countries state
-      const populationData = await getPopulationData();
-      setCountries(populationData);
-      setFilteredCountries(populationData); // Initialize the filtered list with all countries
+      try {
+        // Retrieve country data and flag mappings
+        const { countries, flagMap } = await fetchCountryData();
 
-      // Fetch flags and map them to their respective country names
-      const flagData = await getCountryFlags();
-      const flagMap = {};
-      flagData.forEach((item) => {
-        flagMap[item.name.toLowerCase()] = item.flag;
-      });
-      setFlags(flagMap);
+        // Set the full list of countries and their flags in state
+        setCountries(countries);
+        setFlags(flagMap);
 
-      // Data fetching is complete, set loading to false
-      setLoading(false);
+        // Initially set the filtered list to contain all countries
+        setFilteredCountries(countries);
+
+        // Mark data loading as complete
+        setLoading(false);
+      } catch (error) {
+        console.error('Error fetching data:', error); // Log any errors
+      }
     };
 
-    fetchData(); // Call the fetchData function
-  }, []); // Empty dependency array ensures this runs only once after the component mounts
+    fetchData(); // Call the function to fetch data
+  }, []); // Empty dependency array ensures this runs only once after component mounts
 
-  // Filter the countries list whenever the search query or countries state changes
+  // Update the filtered list of countries whenever the search query or countries change
   useEffect(() => {
-    const lowercasedQuery = searchQuery.toLowerCase(); // Convert the search query to lowercase for case-insensitive matching
+    const lowercasedQuery = searchQuery.toLowerCase(); // Convert query to lowercase for case-insensitive matching
+
+    // Filter countries by checking if the country or city name includes the query
     const filtered = countries.filter(
       (country) =>
-        country.country.toLowerCase().includes(lowercasedQuery) || // Check if country name matches the query
-        country.city.toLowerCase().includes(lowercasedQuery) // Check if city name matches the query
+        country.country.toLowerCase().includes(lowercasedQuery) ||
+        country.city.toLowerCase().includes(lowercasedQuery)
     );
-    setFilteredCountries(filtered); // Update the filtered countries list
 
-    // Notify the parent component about the search query
+    setFilteredCountries(filtered); // Update the filtered list
+
+    // Notify the parent component about the current search query (if provided)
     if (onSearchChange) {
-      onSearchChange(searchQuery); // Pass the current search query to the parent
+      onSearchChange(searchQuery);
     }
   }, [searchQuery, countries, onSearchChange]); // Dependencies: Runs when `searchQuery`, `countries`, or `onSearchChange` changes
 
-  // Show a loading message if data is still being fetched
+  // Display a loading message if the data is still being fetched
   if (loading) return <p className="text-blue-500 text-lg">Loading data...</p>;
 
-  // Render the component
+  // Render the searchable list of countries with their flags and population
   return (
     <div className="p-4 w-full md:w-2/3 lg:w-1/2">
       {/* Header */}
@@ -76,16 +81,16 @@ const CountryList = ({ onSelectCountry, onSearchChange }) => {
         onChange={(e) =>
           setSearchQuery(
             e.target.value
-              .toLowerCase()
+              .toLowerCase() // Convert query to lowercase
               .replace(/\b\w/g, (char) => char.toUpperCase()) // Capitalize the first letter of each word
           )
         }
       />
 
-      {/* Filtered list of countries */}
+      {/* List of filtered countries */}
       <ul className="space-y-3">
         {filteredCountries.map((country) => {
-          // Extract the population of the current country, defaulting to 0 if data is unavailable
+          // Get the population value (default to 0 if not available)
           const population = Math.round(country.populationCounts?.[0]?.value || 0);
 
           // Determine the background color based on the population range
@@ -93,15 +98,19 @@ const CountryList = ({ onSelectCountry, onSearchChange }) => {
           if (population > 1000000) bgColor = 'bg-yellow-100'; // Yellow for medium population
           if (population > 5000000) bgColor = 'bg-red-100'; // Red for high population
 
-          // Retrieve the flag for the current country from the flags mapping
-          const flag = flags[country.country.toLowerCase()] || ''; // Default to an empty string if no flag is found
+          // Standardize country names using the mapping utility
+          const standardizedCountryName =
+            countryNameMapping[country.country.toLowerCase()] || country.country;
+
+          // Get the flag for the standardized country name (default to empty if not found)
+          const flag = flags[standardizedCountryName.toLowerCase()] || '';
 
           // Render each country item
           return (
             <li
-              key={country.city} // Use city as a unique key
-              className={`p-4 border rounded-lg ${bgColor} cursor-pointer hover:bg-opacity-80 flex items-center`} // Styling for the item
-              onClick={() => onSelectCountry(country)} // Call the `onSelectCountry` callback when an item is clicked
+              key={`${country.country}-${country.city}`} // Unique key for each country-city pair
+              className={`p-4 border rounded-lg ${bgColor} cursor-pointer hover:bg-opacity-80 flex items-center`} // Styling for each item
+              onClick={() => onSelectCountry(country)} // Notify parent component when a country is selected
             >
               {/* Display the country's flag */}
               {flag && (
@@ -111,10 +120,12 @@ const CountryList = ({ onSelectCountry, onSearchChange }) => {
                   className="w-10 h-6 mr-4 border rounded-lg" // Styling for the flag
                 />
               )}
+
               {/* Display the country and city names */}
               <span className="font-semibold text-lg">
                 {country.country} - {country.city}:
               </span>
+
               {/* Display the population formatted with commas */}
               <span className="ml-2 font-bold text-lg">{population.toLocaleString()}</span>
             </li>
@@ -130,4 +141,4 @@ const CountryList = ({ onSelectCountry, onSearchChange }) => {
   );
 };
 
-export default CountryList;
+export default CountryList; // Export the component for use in other parts of the app

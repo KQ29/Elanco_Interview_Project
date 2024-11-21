@@ -20,7 +20,7 @@ const App = () => {
 
   return (
     <div
-      className="min-h-screen"
+      className="min-h-screen flex flex-col"
       style={{
         backgroundImage: 'linear-gradient(90deg, #1D4ED8, #60A5FA)', // Gradient background
         backgroundSize: 'cover', // Ensures the background covers the screen
@@ -41,7 +41,7 @@ const App = () => {
       </header>
 
       {/* Main Content */}
-      <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4 p-4">
+      <div className="flex-grow flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4 p-4">
         {/* Country List Section */}
         <div className="md:w-2/3 w-full">
           <CountryList
@@ -67,6 +67,14 @@ const App = () => {
           </div>
         </div>
       </div>
+
+      {/* Footer Section */}
+      <footer className="bg-blue-900 text-white text-center py-4 mt-8">
+        <p className="text-sm">
+          © {new Date().getFullYear()} Elanco Population App. All rights reserved.
+        </p>
+        <p className="text-sm">Powered by React and Tailwind CSS</p>
+      </footer>
     </div>
   );
 };
