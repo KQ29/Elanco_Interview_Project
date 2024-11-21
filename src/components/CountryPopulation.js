@@ -14,10 +14,8 @@ const CountryPopulation = ({ onCountryClick }) => {
     const fetchData = async () => {
       try {
         const data = await getCountriesData(); // Fetch countries data from the API
-        // Sort countries alphabetically by name
-        const sortedData = data.sort((a, b) => a.name.localeCompare(b.name));
-        setCountries(sortedData);
-        setFilteredCountries(sortedData); // Initialize filtered list
+        setCountries(data);
+        setFilteredCountries(data); // Initialize filtered list
         setLoading(false); // Set loading to false
       } catch (error) {
         console.error('Error fetching countries data:', error);
@@ -48,19 +46,32 @@ const CountryPopulation = ({ onCountryClick }) => {
   return (
     <div className="p-4 w-full md:w-2/3 lg:w-1/2">
       <h2 className="text-3xl font-bold text-white mb-4">Country Population Data</h2>
+
+      {/* Search Input */}
       <input
         type="text"
         placeholder="Search by Country Name..."
-        className="w-full p-3 border border-gray-300 rounded-lg mb-4 text-lg focus:outline-none focus:ring-2 focus:ring-blue-400 font-medium"
+        className="w-full p-3 border border-gray-300 rounded-lg mb-4 text-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
         value={searchQuery}
-        onChange={(e) => {
-          const value = e.target.value;
-          // Capitalize the first letter
-          const capitalizedValue =
-            value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
-          setSearchQuery(capitalizedValue);
-        }}
+        onChange={(e) => setSearchQuery(e.target.value)}
       />
+
+      {/* Autocomplete Suggestions */}
+      {searchQuery && (
+        <div className="bg-white shadow-lg rounded-lg mb-4">
+          {filteredCountries.slice(0, 8).map((country) => (
+            <div
+              key={country.name}
+              className="p-2 cursor-pointer hover:bg-gray-100"
+              onClick={() => setSearchQuery(country.name)}
+            >
+              {country.name}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Country List */}
       <ul className="space-y-3">
         {countriesToDisplay.map((country) => {
           const { name, flag, population } = country;
