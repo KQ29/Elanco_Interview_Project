@@ -14,8 +14,10 @@ const CountryPopulation = ({ onCountryClick }) => {
     const fetchData = async () => {
       try {
         const data = await getCountriesData(); // Fetch countries data from the API
-        setCountries(data);
-        setFilteredCountries(data); // Initialize filtered list
+        // Sort countries alphabetically by name
+        const sortedData = data.sort((a, b) => a.name.localeCompare(b.name));
+        setCountries(sortedData);
+        setFilteredCountries(sortedData); // Initialize filtered list
         setLoading(false); // Set loading to false
       } catch (error) {
         console.error('Error fetching countries data:', error);
@@ -27,9 +29,8 @@ const CountryPopulation = ({ onCountryClick }) => {
 
   // Filter the countries list whenever the search query changes
   useEffect(() => {
-    const lowercasedQuery = searchQuery.toLowerCase();
     const filtered = countries.filter((country) =>
-      country.name.toLowerCase().includes(lowercasedQuery)
+      country.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
     setFilteredCountries(filtered);
     setCurrentPage(0); // Reset to the first page on search
@@ -49,10 +50,16 @@ const CountryPopulation = ({ onCountryClick }) => {
       <h2 className="text-3xl font-bold text-white mb-4">Country Population Data</h2>
       <input
         type="text"
-        placeholder="Search by country name..."
-        className="w-full p-3 border border-gray-300 rounded-lg mb-4 text-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+        placeholder="Search by Country Name..."
+        className="w-full p-3 border border-gray-300 rounded-lg mb-4 text-lg focus:outline-none focus:ring-2 focus:ring-blue-400 font-medium"
         value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
+        onChange={(e) => {
+          const value = e.target.value;
+          // Capitalize the first letter
+          const capitalizedValue =
+            value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
+          setSearchQuery(capitalizedValue);
+        }}
       />
       <ul className="space-y-3">
         {countriesToDisplay.map((country) => {

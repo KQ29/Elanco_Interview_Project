@@ -42,7 +42,7 @@ const App = () => {
           className="mt-4 bg-yellow-400 text-black px-4 py-2 rounded hover:bg-yellow-500"
           onClick={toggleView}
         >
-          {showCountryList ? 'Switch to Country Population' : 'Switch to Country List'}
+          {showCountryList ? 'Switch to Country Population' : 'Switch to Country-City Population'}
         </button>
       </header>
 

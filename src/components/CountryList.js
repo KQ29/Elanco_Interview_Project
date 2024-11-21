@@ -29,11 +29,10 @@ const CountryList = ({ onSelectCountry, onSearchChange }) => {
 
   // Filter the countries list whenever the search query or countries state changes
   useEffect(() => {
-    const lowercasedQuery = searchQuery.toLowerCase();
     const filtered = countries.filter(
       (country) =>
-        country.country.toLowerCase().includes(lowercasedQuery) ||
-        country.city.toLowerCase().includes(lowercasedQuery)
+        country.country.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        country.city.toLowerCase().includes(searchQuery.toLowerCase())
     );
     setFilteredCountries(filtered);
 
@@ -57,16 +56,16 @@ const CountryList = ({ onSelectCountry, onSearchChange }) => {
       <h2 className="text-3xl font-bold text-white mb-4">Country-City Population Data</h2>
       <input
         type="text"
-        placeholder="Search by city or country..."
-        className="w-full p-3 border border-gray-300 rounded-lg mb-4 text-lg focus:outline-none focus:ring-2 focus:ring-blue-400 font-medium capitalize"
+        placeholder="Search by City or Country..." // Placeholder remains unaffected
+        className="w-full p-3 border border-gray-300 rounded-lg mb-4 text-lg focus:outline-none focus:ring-2 focus:ring-blue-400 font-medium"
         value={searchQuery}
-        onChange={(e) =>
-          setSearchQuery(
-            e.target.value
-              .toLowerCase()
-              .replace(/\b\w/g, (char) => char.toUpperCase())
-          )
-        }
+        onChange={(e) => {
+          const value = e.target.value;
+          // Ensure only the input text is capitalized, placeholder remains as is
+          const capitalizedValue =
+            value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
+          setSearchQuery(capitalizedValue);
+        }}
       />
       <ul className="space-y-3">
         {countriesToDisplay.map((country) => {
