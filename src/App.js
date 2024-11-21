@@ -1,12 +1,20 @@
 import React, { useState } from 'react';
 import CountryList from './components/CountryList';
+import CountryPopulation from './components/CountryPopulation';
 import PopulationChart from './components/PopulationChart';
+import CountryPopulationChart from './components/CountryPopulationChart';
 
 const App = () => {
   const [selectedData, setSelectedData] = useState([]);
+  const [showCountryList, setShowCountryList] = useState(true); // State to toggle components
 
   const handleSelectCountry = (country) => {
-    setSelectedData([country]);
+    setSelectedData([country]); // Pass the selected country or city data
+  };
+
+  const toggleView = () => {
+    setShowCountryList((prevState) => !prevState);
+    setSelectedData([]); // Clear the chart data when toggling views
   };
 
   return (
@@ -31,11 +39,25 @@ const App = () => {
         </p>
       </header>
 
+      {/* Toggle Button */}
+      <div className="text-center mb-4">
+        <button
+          onClick={toggleView}
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+        >
+          {showCountryList ? 'Switch to Country Population' : 'Switch to Country List'}
+        </button>
+      </div>
+
       {/* Main Content */}
       <div className="flex-grow flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4 p-4">
-        {/* Country List Section */}
+        {/* Conditionally Rendered Section */}
         <div className="md:w-2/3 w-full">
-          <CountryList onSelectCountry={handleSelectCountry} />
+          {showCountryList ? (
+            <CountryList onSelectCountry={handleSelectCountry} />
+          ) : (
+            <CountryPopulation onCountryClick={handleSelectCountry} />
+          )}
         </div>
 
         {/* Chart Section */}
@@ -48,7 +70,11 @@ const App = () => {
               justifyContent: 'center', // Horizontally align the chart
             }}
           >
-            <PopulationChart data={selectedData} />
+            {showCountryList ? (
+              <PopulationChart data={selectedData} /> // Chart for CountryList
+            ) : (
+              <CountryPopulationChart data={selectedData} /> // Chart for CountryPopulation
+            )}
           </div>
         </div>
       </div>
