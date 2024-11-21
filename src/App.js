@@ -37,17 +37,14 @@ const App = () => {
         <p className="text-lg mt-2 text-gray-200">
           Explore population statistics by city and country with ease.
         </p>
-      </header>
-
-      {/* Toggle Button */}
-      <div className="text-center mb-4">
+        {/* Toggle Button */}
         <button
+          className="mt-4 bg-yellow-400 text-black px-4 py-2 rounded hover:bg-yellow-500"
           onClick={toggleView}
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
         >
           {showCountryList ? 'Switch to Country Population' : 'Switch to Country List'}
         </button>
-      </div>
+      </header>
 
       {/* Main Content */}
       <div className="flex-grow flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4 p-4">
