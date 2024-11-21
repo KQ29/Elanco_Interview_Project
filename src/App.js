@@ -4,6 +4,35 @@ import CountryPopulation from './components/CountryPopulation';
 import PopulationChart from './components/PopulationChart';
 import CountryPopulationChart from './components/CountryPopulationChart';
 
+// Compact Legend Component with Background Color Change
+const CompactLegend = () => {
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  const legendOptions = [
+    { label: 'Low Population (< 1M)', color: 'bg-green-100' },
+    { label: 'Medium Pop. (1M - 5M)', color: 'bg-yellow-100' },
+    { label: 'Over-Populated (> 5M)', color: 'bg-red-100' },
+  ];
+
+  const handleNext = () => {
+    setCurrentIndex((prevIndex) => (prevIndex + 1) % legendOptions.length);
+  };
+
+  return (
+    <div
+      className={`mt-4 flex justify-center items-center p-4 shadow-md rounded-lg cursor-pointer ${legendOptions[currentIndex].color}`}
+      onClick={handleNext} // Change the background color and text when clicked
+      style={{ minWidth: '150px', maxWidth: '210px', marginLeft: '165px', marginTop: '-5px' }}
+      aria-label="Change category"
+    >
+      {/* Legend Text */}
+      <span className="text-gray-700 font-semibold">
+        {legendOptions[currentIndex].label}
+      </span>
+    </div>
+  );
+};
+
 const App = () => {
   const [selectedData, setSelectedData] = useState([]);
   const [showCountryList, setShowCountryList] = useState(true); // State to toggle components
@@ -51,9 +80,15 @@ const App = () => {
         {/* Conditionally Rendered Section */}
         <div className="md:w-2/3 w-full">
           {showCountryList ? (
-            <CountryList onSelectCountry={handleSelectCountry} />
+            <>
+              <CountryList onSelectCountry={handleSelectCountry} />
+              <CompactLegend /> {/* Compact Legend Below Table */}
+            </>
           ) : (
-            <CountryPopulation onCountryClick={handleSelectCountry} />
+            <>
+              <CountryPopulation onCountryClick={handleSelectCountry} />
+              <CompactLegend /> {/* Compact Legend Below Table */}
+            </>
           )}
         </div>
 
