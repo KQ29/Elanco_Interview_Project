@@ -25,25 +25,22 @@ const CompactLegend = () => {
       style={{ minWidth: '150px', maxWidth: '210px', marginLeft: '165px', marginTop: '-5px' }}
       aria-label="Change category"
     >
-      {/* Legend Text */}
-      <span className="text-gray-700 font-semibold">
-        {legendOptions[currentIndex].label}
-      </span>
+      <span className="text-gray-700 font-semibold">{legendOptions[currentIndex].label}</span>
     </div>
   );
 };
 
 const App = () => {
   const [selectedData, setSelectedData] = useState([]);
-  const [showCountryList, setShowCountryList] = useState(true); // State to toggle components
+  const [showCountryList, setShowCountryList] = useState(true);
 
   const handleSelectCountry = (country) => {
-    setSelectedData([country]); // Pass the selected country or city data
+    setSelectedData([country]);
   };
 
   const toggleView = () => {
     setShowCountryList((prevState) => !prevState);
-    setSelectedData([]); // Clear the chart data when toggling views
+    setSelectedData([]);
   };
 
   return (
@@ -56,23 +53,37 @@ const App = () => {
       }}
     >
       {/* Main Heading */}
-      <header className="text-center mb-8 py-8">
+      <header className="relative mb-8 py-8">
+        {/* Elanco in the Top-Left */}
+        <div className="absolute top-10 left-14">
+          <h1
+            className="text-4xl font-bold"
+            style={{ color: '#FFFFFF', fontFamily: 'Helvetica Neue, Arial, sans-serif' }}
+          >
+            <span style={{ fontWeight: 'bold', fontStyle: 'italic' }}>Elanco</span>
+          </h1>
+        </div>
+
+        {/* Centered Title */}
         <h1
-          className="text-4xl font-bold"
+          className="text-4xl font-bold text-center"
           style={{ color: '#FFFFFF', fontFamily: 'Helvetica Neue, Arial, sans-serif' }}
         >
-          <span style={{ fontWeight: 'bold', fontStyle: 'italic' }}>Elanco</span> Population App
+          Population App
         </h1>
-        <p className="text-lg mt-2 text-gray-200">
+        <p className="text-lg mt-2 text-center text-gray-200">
           Explore population statistics by city and country with ease.
         </p>
+
         {/* Toggle Button */}
-        <button
-          className="mt-4 bg-yellow-400 text-black px-4 py-2 rounded hover:bg-yellow-500"
-          onClick={toggleView}
-        >
-          {showCountryList ? 'Switch to Country Population' : 'Switch to Country-City Population'}
-        </button>
+        <div className="text-center mt-4">
+          <button
+            className="bg-yellow-400 text-black px-4 py-2 rounded hover:bg-yellow-500"
+            onClick={toggleView}
+          >
+            {showCountryList ? 'Switch to Country Population' : 'Switch to Country-City Population'}
+          </button>
+        </div>
       </header>
 
       {/* Main Content */}
@@ -82,12 +93,12 @@ const App = () => {
           {showCountryList ? (
             <>
               <CountryList onSelectCountry={handleSelectCountry} />
-              <CompactLegend /> {/* Compact Legend Below Table */}
+              <CompactLegend />
             </>
           ) : (
             <>
               <CountryPopulation onCountryClick={handleSelectCountry} />
-              <CompactLegend /> {/* Compact Legend Below Table */}
+              <CompactLegend />
             </>
           )}
         </div>
@@ -97,15 +108,15 @@ const App = () => {
           <div
             style={{
               top: 'auto',
-              transform: 'translate(-250px, 0px)', // Adjust positioning as needed
+              transform: 'translate(-250px, 0px)',
               display: 'flex',
-              justifyContent: 'center', // Horizontally align the chart
+              justifyContent: 'center',
             }}
           >
             {showCountryList ? (
-              <PopulationChart data={selectedData} /> // Chart for CountryList
+              <PopulationChart data={selectedData} />
             ) : (
-              <CountryPopulationChart data={selectedData} /> // Chart for CountryPopulation
+              <CountryPopulationChart data={selectedData} />
             )}
           </div>
         </div>
