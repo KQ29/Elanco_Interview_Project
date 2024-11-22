@@ -44,14 +44,7 @@ const App = () => {
   };
 
   return (
-    <div
-      className="min-h-screen flex flex-col"
-      style={{
-        backgroundImage: 'linear-gradient(90deg, #1D4ED8, #60A5FA)', // Gradient background
-        backgroundSize: 'cover', // Ensures the background covers the screen
-        backgroundRepeat: 'no-repeat',
-      }}
-    >
+    <div className="min-h-screen flex flex-col bg-elanco-gradient bg-cover bg-no-repeat">
       {/* Main Heading */}
       <header className="relative mb-8 py-8">
         {/* Elanco in the Top-Left */}
