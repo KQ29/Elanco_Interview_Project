@@ -7,6 +7,7 @@ const CountryPopulation = ({ onCountryClick }) => {
   const [filteredCountries, setFilteredCountries] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(0); // State to track the current page
+  const [sortOption, setSortOption] = useState('name-asc'); // Default sorting option
   const countriesPerPage = 5; // Number of countries to display per page
 
   // Fetch data when the component is mounted
@@ -25,14 +26,33 @@ const CountryPopulation = ({ onCountryClick }) => {
     fetchData();
   }, []);
 
-  // Filter the countries list whenever the search query changes
+  // Filter and sort the countries list whenever the search query, countries, or sort option changes
   useEffect(() => {
-    const filtered = countries.filter((country) =>
+    let filtered = countries.filter((country) =>
       country.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
+
+    // Apply sorting
+    switch (sortOption) {
+      case 'name-asc':
+        filtered = filtered.sort((a, b) => a.name.localeCompare(b.name));
+        break;
+      case 'name-desc':
+        filtered = filtered.sort((a, b) => b.name.localeCompare(a.name));
+        break;
+      case 'population-asc':
+        filtered = filtered.sort((a, b) => a.population - b.population);
+        break;
+      case 'population-desc':
+        filtered = filtered.sort((a, b) => b.population - a.population);
+        break;
+      default:
+        break;
+    }
+
     setFilteredCountries(filtered);
-    setCurrentPage(0); // Reset to the first page on search
-  }, [searchQuery, countries]);
+    setCurrentPage(0); // Reset to the first page on search or sort
+  }, [searchQuery, countries, sortOption]);
 
   // Pagination logic
   const startIndex = currentPage * countriesPerPage;
@@ -58,7 +78,7 @@ const CountryPopulation = ({ onCountryClick }) => {
 
       {/* Autocomplete Suggestions */}
       {searchQuery && (
-        <div className="bg-white shadow-lg rounded-lg mb-4">
+        <div className="bg-white shadow-lg rounded-lg mb-4 max-h-40 overflow-y-auto">
           {filteredCountries.slice(0, 8).map((country) => (
             <div
               key={country.name}
@@ -70,6 +90,18 @@ const CountryPopulation = ({ onCountryClick }) => {
           ))}
         </div>
       )}
+
+      {/* Sorting Dropdown */}
+      <select
+        className="w-full p-3 border border-gray-300 rounded-lg mb-4 text-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+        value={sortOption}
+        onChange={(e) => setSortOption(e.target.value)}
+      >
+        <option value="name-asc">Sort by Name (A-Z)</option>
+        <option value="name-desc">Sort by Name (Z-A)</option>
+        <option value="population-asc">Sort by Population (Ascending)</option>
+        <option value="population-desc">Sort by Population (Descending)</option>
+      </select>
 
       {/* Country List */}
       <ul className="space-y-3">

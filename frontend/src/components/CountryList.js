@@ -57,7 +57,7 @@ const CountryList = ({ onSelectCountry, onSearchChange }) => {
       <input
         type="text"
         placeholder="Search by City or Country..." // Placeholder remains unaffected
-        className="w-full p-3 border border-gray-300 rounded-lg mb-4 text-lg focus:outline-none focus:ring-2 focus:ring-blue-400 font-medium"
+        className="w-full p-3 border border-gray-300 rounded-lg mb-4 text-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
         value={searchQuery}
         onChange={(e) => {
           const value = e.target.value;
