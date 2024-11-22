@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import CountryList from './components/CountryList';
 import CountryPopulation from './components/CountryPopulation';
 import PopulationChart from './components/PopulationChart';
@@ -21,7 +21,7 @@ const CompactLegend = () => {
   return (
     <div
       className={`mt-4 flex justify-center items-center p-4 shadow-md rounded-lg cursor-pointer ${legendOptions[currentIndex].color}`}
-      onClick={handleNext} // Change the background color and text when clicked
+      onClick={handleNext}
       style={{ minWidth: '150px', maxWidth: '210px', marginLeft: '165px', marginTop: '-5px' }}
       aria-label="Change category"
     >
@@ -31,6 +31,29 @@ const CompactLegend = () => {
 };
 
 const App = () => {
+  const [backgroundPosition, setBackgroundPosition] = useState(0);
+  const [direction, setDirection] = useState(1); // 1 for forward, -1 for backward
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setBackgroundPosition((prev) => {
+        const nextPosition = prev + direction * 0.25; 
+        if (nextPosition >= 100 || nextPosition <= 0) {
+          setDirection(-direction); 
+        }
+        return nextPosition;
+      });
+    }, 50); // Longer interval for slower animation
+
+    return () => clearInterval(interval); // Cleanup the interval on unmount
+  }, [direction]);
+
+  const animatedBackgroundStyle = {
+    background: 'linear-gradient(135deg, #1D4ED8, #60A5FA, #3B82F6, #2563EB, #93C5FD, #3B82F6, #1D4ED8)',
+    backgroundSize: '400% 100%',
+    backgroundPosition: `${backgroundPosition}% 50%`,
+  };
+
   const [selectedData, setSelectedData] = useState([]);
   const [showCountryList, setShowCountryList] = useState(true);
 
@@ -44,7 +67,10 @@ const App = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-elanco-gradient bg-cover bg-no-repeat">
+    <div
+      className="min-h-screen flex flex-col"
+      style={animatedBackgroundStyle}
+    >
       {/* Main Heading */}
       <header className="relative mb-8 py-8">
         {/* Elanco in the Top-Left */}
