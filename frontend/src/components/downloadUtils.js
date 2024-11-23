@@ -1,74 +1,89 @@
+import axios from 'axios'; // Import axios for API calls
+
+// Base URL for flag API
+const FLAG_API_BASE_URL = 'https://restcountries.com/v3.1/name';
+
+// Function to fetch the flag for a given country
+const fetchFlag = async (countryName) => {
+  try {
+    const response = await axios.get(`${FLAG_API_BASE_URL}/${encodeURIComponent(countryName)}`);
+    // Extract flag URL from the API response
+    return response.data[0]?.flags?.png || response.data[0]?.flags?.svg || 'No flag available';
+  } catch (error) {
+    console.error(`Error fetching flag for ${countryName}:`, error);
+    return 'No flag available'; // Return a fallback value if the flag cannot be fetched
+  }
+};
+
 // Function to download data as a JSON file
-export const downloadAsJSON = (selectedData, showCountryList) => {
-    // Check if there is any selected data
-    if (selectedData.length > 0) {
-      // Prepare the data object based on the current view (Country List or Country Population)
-      const data = showCountryList
-        ? {
-            // For "Country-City Population" view, include city, country, population, and flag
-            city: selectedData[0]?.city || 'Unknown',
-            country: selectedData[0]?.country || 'Unknown',
-            population: selectedData[0]?.populationCounts?.[0]?.value || 'Unknown',
-            flag: selectedData[0]?.flag || 'No flag available',
-          }
-        : {
-            // For "Country Population" view, include name, population, and flag
-            name: selectedData[0]?.name || 'Unknown',
-            population: selectedData[0]?.population || 'Unknown',
-            flag: selectedData[0]?.flag || 'No flag available',
-          };
-  
-      // Create a JSON file from the prepared data
-      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-  
-      // Generate a temporary URL for the file
-      const url = URL.createObjectURL(blob);
-  
-      // Create a temporary anchor element to trigger the download
-      const a = document.createElement('a');
-      a.href = url; // Set the file URL
-      a.download = `${data.country || data.name}_data.json`; // Set the file name
-  
-      a.click(); // Trigger the download
-      URL.revokeObjectURL(url); // Clean up the temporary URL to free resources
-    } else {
-      // Show an alert if no data is selected
-      alert('No data selected for download.');
+export const downloadAsJSON = async (selectedData, showCountryList) => {
+  if (selectedData.length > 0) {
+    const firstItem = selectedData[0];
+    let flag = 'No flag available';
+
+    // Only fetch flag if in "Country-City Population Data" view (State 1)
+    if (showCountryList) {
+      const countryName = firstItem?.country;
+      flag = await fetchFlag(countryName);
     }
-  };
-  
-  // Function to download data as a CSV file
-  export const downloadAsCSV = (selectedData, showCountryList) => {
-    // Check if there is any selected data
-    if (selectedData.length > 0) {
-      // Extract the first selected data item
-      const data = selectedData[0];
-  
-      // Prepare the CSV string based on the current view (Country List or Country Population)
-      const csv = showCountryList
-        ? `City,Country,Population,Flag\n${data?.city || 'Unknown'},${data?.country || 'Unknown'},${
-            data?.populationCounts?.[0]?.value || 'Unknown'
-          },${data?.flag || 'No flag available'}`
-        : `Name,Population,Flag\n${data?.name || 'Unknown'},${data?.population || 'Unknown'},${
-            data?.flag || 'No flag available'
-          }`;
-  
-      // Create a CSV file from the prepared string
-      const blob = new Blob([csv], { type: 'text/csv' });
-  
-      // Generate a temporary URL for the file
-      const url = URL.createObjectURL(blob);
-  
-      // Create a temporary anchor element to trigger the download
-      const a = document.createElement('a');
-      a.href = url; // Set the file URL
-      a.download = `${data?.country || data?.name || 'Unknown'}_data.csv`; // Set the file name
-  
-      a.click(); // Trigger the download
-      URL.revokeObjectURL(url); // Clean up the temporary URL to free resources
-    } else {
-      // Show an alert if no data is selected
-      alert('No data selected for download.');
+
+    // Prepare the data object
+    const data = showCountryList
+      ? {
+          city: firstItem?.city || 'Unknown',
+          country: firstItem?.country || 'Unknown',
+          population: firstItem?.populationCounts?.[0]?.value || 'Unknown',
+          flag,
+        }
+      : {
+          name: firstItem?.name || 'Unknown',
+          population: firstItem?.population || 'Unknown',
+          flag: firstItem?.flag || 'No flag available', // Use existing flag for State 2
+        };
+
+    // Create and download JSON
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${data.country || data.name}_data.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  } else {
+    alert('No data selected for download.');
+  }
+};
+
+// Function to download data as a CSV file
+export const downloadAsCSV = async (selectedData, showCountryList) => {
+  if (selectedData.length > 0) {
+    const firstItem = selectedData[0];
+    let flag = 'No flag available';
+
+    // Only fetch flag if in "Country-City Population Data" view (State 1)
+    if (showCountryList) {
+      const countryName = firstItem?.country;
+      flag = await fetchFlag(countryName);
     }
-  };
-  
+
+    // Prepare the CSV string
+    const csv = showCountryList
+      ? `City,Country,Population,Flag\n${firstItem?.city || 'Unknown'},${
+          firstItem?.country || 'Unknown'
+        },${firstItem?.populationCounts?.[0]?.value || 'Unknown'},${flag}`
+      : `Name,Population,Flag\n${firstItem?.name || 'Unknown'},${
+          firstItem?.population || 'Unknown'
+        },${firstItem?.flag || 'No flag available'}`; // Use existing flag for State 2
+
+    // Create and download CSV
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${firstItem?.country || firstItem?.name || 'Unknown'}_data.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  } else {
+    alert('No data selected for download.');
+  }
+};
