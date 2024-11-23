@@ -4,18 +4,15 @@ import CountryPopulation from './components/CountryPopulation';
 import PopulationChart from './components/PopulationChart';
 import CountryPopulationChart from './components/CountryPopulationChart';
 
-// CompactLegend Component: Displays a legend with population categories
 const CompactLegend = () => {
-  const [currentIndex, setCurrentIndex] = useState(0); // Tracks the current legend index
+  const [currentIndex, setCurrentIndex] = useState(0);
 
-  // Updated legend options with softer colors
   const legendOptions = [
-    { label: 'Low Population (< 1M)', color: 'bg-green-200' }, // Softer green for low population
-    { label: 'Medium Pop. (1M - 5M)', color: 'bg-yellow-200' }, // Softer yellow for medium population
-    { label: 'Over-Populated (> 5M)', color: 'bg-red-200' }, // Softer red for high population
+    { label: 'Low Population (< 1M)', color: 'bg-green-200' },
+    { label: 'Medium Pop. (1M - 5M)', color: 'bg-yellow-200' },
+    { label: 'Over-Populated (> 5M)', color: 'bg-red-200' },
   ];
 
-  // Handles the click to cycle through legend categories
   const handleNext = () => {
     setCurrentIndex((prevIndex) => (prevIndex + 1) % legendOptions.length);
   };
@@ -32,45 +29,85 @@ const CompactLegend = () => {
   );
 };
 
-// Main App Component
 const App = () => {
-  const [backgroundPosition, setBackgroundPosition] = useState(0); // Tracks background animation position
-  const [direction, setDirection] = useState(1); // Animation direction (1 for forward, -1 for backward)
+  const [backgroundPosition, setBackgroundPosition] = useState(0);
+  const [direction, setDirection] = useState(1);
+  const [selectedData, setSelectedData] = useState([]);
+  const [showCountryList, setShowCountryList] = useState(true);
 
   useEffect(() => {
-    // Interval for smooth background animation
     const interval = setInterval(() => {
       setBackgroundPosition((prev) => {
-        const nextPosition = prev + direction * 0.25; // Increment/decrement position
+        const nextPosition = prev + direction * 0.25;
         if (nextPosition >= 100 || nextPosition <= 0) {
-          setDirection(-direction); // Reverse direction at boundaries
+          setDirection(-direction);
         }
         return nextPosition;
       });
-    }, 50); // Adjust animation speed
+    }, 50);
 
-    return () => clearInterval(interval); // Cleanup on component unmount
+    return () => clearInterval(interval);
   }, [direction]);
 
-  // Styles for the animated gradient background
   const animatedBackgroundStyle = {
-    background: 'linear-gradient(135deg, #1D4ED8, #60A5FA, #3B82F6, #2563EB, #93C5FD, #3B82F6, #1D4ED8)', // Gradient with lighter blues
+    background: 'linear-gradient(135deg, #1D4ED8, #60A5FA, #3B82F6, #2563EB, #93C5FD, #3B82F6, #1D4ED8)',
     backgroundSize: '400% 100%',
-    backgroundPosition: `${backgroundPosition}% 50%`, // Dynamically update position
+    backgroundPosition: `${backgroundPosition}% 50%`,
   };
 
-  const [selectedData, setSelectedData] = useState([]); // Stores selected country data
-  const [showCountryList, setShowCountryList] = useState(true); // Toggles between views
-
-  // Handles the selection of a country
   const handleSelectCountry = (country) => {
     setSelectedData([country]);
   };
 
-  // Toggles between country list and population views
   const toggleView = () => {
     setShowCountryList((prevState) => !prevState);
-    setSelectedData([]); // Reset selected data
+    setSelectedData([]);
+  };
+
+  const downloadAsJSON = () => {
+    if (selectedData.length > 0) {
+      const data = showCountryList
+        ? {
+            city: selectedData[0]?.city || 'Unknown',
+            country: selectedData[0]?.country || 'Unknown',
+            population: selectedData[0]?.populationCounts?.[0]?.value || 'Unknown',
+          }
+        : {
+            name: selectedData[0]?.name || 'Unknown',
+            population: selectedData[0]?.population || 'Unknown',
+          };
+
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${data.country || data.name}_data.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } else {
+      alert('No data selected for download.');
+    }
+  };
+
+  const downloadAsCSV = () => {
+    if (selectedData.length > 0) {
+      const data = selectedData[0];
+      const csv = showCountryList
+        ? `City,Country,Population\n${data?.city || 'Unknown'},${data?.country || 'Unknown'},${
+            data?.populationCounts?.[0]?.value || 'Unknown'
+          }`
+        : `Name,Population\n${data?.name || 'Unknown'},${data?.population || 'Unknown'}`;
+
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${data?.country || data?.name || 'Unknown'}_data.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } else {
+      alert('No data selected for download.');
+    }
   };
 
   return (
@@ -78,9 +115,7 @@ const App = () => {
       className="min-h-screen flex flex-col"
       style={animatedBackgroundStyle}
     >
-      {/* Header Section */}
       <header className="relative mb-8 py-8">
-        {/* Elanco Logo */}
         <div className="absolute top-10 left-14">
           <h1
             className="text-4xl font-bold"
@@ -90,7 +125,6 @@ const App = () => {
           </h1>
         </div>
 
-        {/* Title */}
         <h1
           className="text-4xl font-bold text-center"
           style={{ color: '#FFFFFF', fontFamily: 'Helvetica Neue, Arial, sans-serif' }}
@@ -101,7 +135,6 @@ const App = () => {
           Explore population statistics by city and country with ease.
         </p>
 
-        {/* Toggle View Button */}
         <div className="text-center mt-4">
           <button
             className="bg-yellow-300 text-black px-4 py-2 rounded hover:bg-yellow-400"
@@ -112,9 +145,7 @@ const App = () => {
         </div>
       </header>
 
-      {/* Main Content */}
       <div className="flex-grow flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4 p-4">
-        {/* Conditional Rendering for Country List or Population View */}
         <div className="md:w-2/3 w-full">
           {showCountryList ? (
             <>
@@ -129,7 +160,6 @@ const App = () => {
           )}
         </div>
 
-        {/* Chart Section */}
         <div className="md:w-1/3 w-full">
           <div
             style={{
@@ -145,10 +175,27 @@ const App = () => {
               <CountryPopulationChart data={selectedData} />
             )}
           </div>
+
+          {/* Download Buttons */}
+          <div className="mt-4 text-center" style={{ transform: 'translateX(-240px)' }}>
+            <button
+              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mr-2 disabled:opacity-50"
+              onClick={downloadAsJSON}
+              disabled={selectedData.length === 0}
+            >
+              Download as JSON
+            </button>
+            <button
+              className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 disabled:opacity-50"
+              onClick={downloadAsCSV}
+              disabled={selectedData.length === 0}
+            >
+              Download as CSV
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* Footer Section */}
       <footer className="bg-blue-900 text-white text-center py-4 mt-8">
         <p className="text-sm">
           © {new Date().getFullYear()} Elanco Population App. All rights reserved.
