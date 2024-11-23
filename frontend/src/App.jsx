@@ -4,16 +4,17 @@ import CountryPopulation from './components/CountryPopulation';
 import PopulationChart from './components/PopulationChart';
 import CountryPopulationChart from './components/CountryPopulationChart';
 
-// Compact Legend Component with Background Color Change
+// CompactLegend Component: Displays a legend and changes the category when clicked
 const CompactLegend = () => {
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState(0); // Tracks the current index in the legend options
 
   const legendOptions = [
-    { label: 'Low Population (< 1M)', color: 'bg-green-100' },
-    { label: 'Medium Pop. (1M - 5M)', color: 'bg-yellow-100' },
-    { label: 'Over-Populated (> 5M)', color: 'bg-red-100' },
+    { label: 'Low Population (< 1M)', color: 'bg-green-100' }, // Green for low population
+    { label: 'Medium Pop. (1M - 5M)', color: 'bg-yellow-100' }, // Yellow for medium population
+    { label: 'Over-Populated (> 5M)', color: 'bg-red-100' }, // Red for high population
   ];
 
+  // Move to the next category in the legend options
   const handleNext = () => {
     setCurrentIndex((prevIndex) => (prevIndex + 1) % legendOptions.length);
   };
@@ -21,7 +22,7 @@ const CompactLegend = () => {
   return (
     <div
       className={`mt-4 flex justify-center items-center p-4 shadow-md rounded-lg cursor-pointer ${legendOptions[currentIndex].color}`}
-      onClick={handleNext}
+      onClick={handleNext} // Change category when clicked
       style={{ minWidth: '150px', maxWidth: '210px', marginLeft: '165px', marginTop: '-5px' }}
       aria-label="Change category"
     >
@@ -30,50 +31,58 @@ const CompactLegend = () => {
   );
 };
 
+// Main App Component
 const App = () => {
+  // Tracks the position of the background gradient
   const [backgroundPosition, setBackgroundPosition] = useState(0);
-  const [direction, setDirection] = useState(1); // 1 for forward, -1 for backward
+
+  // Tracks the direction of the background animation (forward or backward)
+  const [direction, setDirection] = useState(1);
 
   useEffect(() => {
+    // Set up an interval to animate the background gradient
     const interval = setInterval(() => {
       setBackgroundPosition((prev) => {
-        const nextPosition = prev + direction * 0.25; 
+        const nextPosition = prev + direction * 0.25; // Increment or decrement the position
         if (nextPosition >= 100 || nextPosition <= 0) {
-          setDirection(-direction); 
+          setDirection(-direction); // Reverse the direction if limits are reached
         }
         return nextPosition;
       });
-    }, 50); // Longer interval for slower animation
+    }, 50); // Adjust speed of animation (slower with higher value)
 
-    return () => clearInterval(interval); // Cleanup the interval on unmount
+    return () => clearInterval(interval); // Cleanup interval on component unmount
   }, [direction]);
 
+  // Inline styles for the animated background gradient
   const animatedBackgroundStyle = {
     background: 'linear-gradient(135deg, #1D4ED8, #60A5FA, #3B82F6, #2563EB, #93C5FD, #3B82F6, #1D4ED8)',
-    backgroundSize: '400% 100%',
-    backgroundPosition: `${backgroundPosition}% 50%`,
+    backgroundSize: '400% 100%', // Stretch gradient for a smoother animation
+    backgroundPosition: `${backgroundPosition}% 50%`, // Update position dynamically
   };
 
-  const [selectedData, setSelectedData] = useState([]);
-  const [showCountryList, setShowCountryList] = useState(true);
+  const [selectedData, setSelectedData] = useState([]); // Selected country data
+  const [showCountryList, setShowCountryList] = useState(true); // Toggle between views
 
+  // Update the selected data when a country is clicked
   const handleSelectCountry = (country) => {
     setSelectedData([country]);
   };
 
+  // Toggle between country and population views
   const toggleView = () => {
     setShowCountryList((prevState) => !prevState);
-    setSelectedData([]);
+    setSelectedData([]); // Reset selected data when switching views
   };
 
   return (
     <div
-      className="min-h-screen flex flex-col"
-      style={animatedBackgroundStyle}
+      className="min-h-screen flex flex-col" // Full-screen layout
+      style={animatedBackgroundStyle} // Apply animated background
     >
-      {/* Main Heading */}
+      {/* Header Section */}
       <header className="relative mb-8 py-8">
-        {/* Elanco in the Top-Left */}
+        {/* Elanco Logo on the Top-Left */}
         <div className="absolute top-10 left-14">
           <h1
             className="text-4xl font-bold"
@@ -83,7 +92,7 @@ const App = () => {
           </h1>
         </div>
 
-        {/* Centered Title */}
+        {/* App Title */}
         <h1
           className="text-4xl font-bold text-center"
           style={{ color: '#FFFFFF', fontFamily: 'Helvetica Neue, Arial, sans-serif' }}
@@ -94,7 +103,7 @@ const App = () => {
           Explore population statistics by city and country with ease.
         </p>
 
-        {/* Toggle Button */}
+        {/* Toggle Button to Switch Views */}
         <div className="text-center mt-4">
           <button
             className="bg-yellow-400 text-black px-4 py-2 rounded hover:bg-yellow-500"
@@ -105,9 +114,9 @@ const App = () => {
         </div>
       </header>
 
-      {/* Main Content */}
+      {/* Main Content Section */}
       <div className="flex-grow flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4 p-4">
-        {/* Conditionally Rendered Section */}
+        {/* Conditionally Render Country List or Population View */}
         <div className="md:w-2/3 w-full">
           {showCountryList ? (
             <>
@@ -127,7 +136,7 @@ const App = () => {
           <div
             style={{
               top: 'auto',
-              transform: 'translate(-250px, 0px)',
+              transform: 'translate(-250px, 0px)', // Align chart with layout
               display: 'flex',
               justifyContent: 'center',
             }}

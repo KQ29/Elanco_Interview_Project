@@ -35,48 +35,46 @@ export const countryNameMapping = {
     'wallis and futuna islands': 'Wallis and Futuna', // Standardize Wallis and Futuna
 };
 
-// Fetch and process data for population and flags
+// Fetch and process population and flag data
 export const fetchCountryData = async () => {
-  // Fetch population data for cities and countries
+  // Step 1: Fetch country population data (primary API)
   const countries = await getPopulationData();
 
-  // Fetch flag data for countries
+  // Step 2: Fetch flag data for countries (primary API)
   const flags = await getCountryFlags();
 
-  // Map flags to country names using the standardized mapping
+  // Step 3: Create a map of flags using standardized country names
   const flagMap = {};
-
-  // Standardize and map primary API flags
   flags.forEach((item) => {
-    const standardizedName = item.name.toLowerCase();
-    const mappedName = countryNameMapping[standardizedName] || item.name;
-    flagMap[mappedName.toLowerCase()] = item.flag;
+    const standardizedName = item.name.toLowerCase(); // Lowercase for consistency
+    const mappedName = countryNameMapping[standardizedName] || item.name; // Use mapping if available
+    flagMap[mappedName.toLowerCase()] = item.flag; // Store the flag URL with the standardized name
   });
 
-  // Handle missing flags with the fallback API
+  // Step 4: Identify countries with missing flags
   const missingFlags = [];
   countries.forEach((country) => {
     const countryName = countryNameMapping[country.country.toLowerCase()] || country.country;
     if (!flagMap[countryName.toLowerCase()]) {
-      missingFlags.push(countryName);
+      missingFlags.push(countryName); // Add to the list of missing flags
     }
   });
 
-  // If there are missing flags, fetch them from the secondary API
+  // Step 5: Fetch missing flags from a secondary API, if needed
   if (missingFlags.length > 0) {
-    const fallbackFlags = await fetchFallbackFlags(missingFlags);
+    const fallbackFlags = await fetchFallbackFlags(missingFlags); // Fetch flags from secondary API
     missingFlags.forEach((countryName) => {
-      flagMap[countryName.toLowerCase()] = fallbackFlags[countryName.toLowerCase()] || '';
+      flagMap[countryName.toLowerCase()] = fallbackFlags[countryName.toLowerCase()] || ''; // Update the flag map with fallback flags
     });
   }
 
-  return { countries, flagMap };
+  return { countries, flagMap }; // Return processed data
 };
 
-// Fetch missing flags from a secondary API
+// Function to fetch missing flags from a secondary API
 const fetchFallbackFlags = async (missingCountries) => {
-    const fallbackFlagMap = {};
-    const secondaryApiBaseUrl = 'https://restcountries.com/v3.1/name';
+    const fallbackFlagMap = {}; // Object to store fallback flags
+    const secondaryApiBaseUrl = 'https://restcountries.com/v3.1/name'; // Base URL for the secondary API
   
     for (const country of missingCountries) {
       // Skip invalid or unexpected entries
@@ -85,17 +83,20 @@ const fetchFallbackFlags = async (missingCountries) => {
         continue;
       }
   
-      // Correct country name if needed (e.g., Åland Islands)
+      // Correct country name for specific cases (e.g., Åland Islands)
       const correctedName = country === 'Aland Islands' ? 'Åland Islands' : country;
   
       try {
+        // Fetch flag data from the secondary API
         const response = await axios.get(`${secondaryApiBaseUrl}/${encodeURIComponent(correctedName)}`);
-        const flagUrl = response.data[0]?.flags?.png || response.data[0]?.flags?.svg || null;
-  
+        const flagUrl = response.data[0]?.flags?.png || response.data[0]?.flags?.svg || null; // Extract flag URL
+
+        // Store the flag URL if available
         if (flagUrl) {
           fallbackFlagMap[country.toLowerCase()] = flagUrl;
         }
       } catch (error) {
+        // Handle specific API errors, such as 404 (Not Found)
         if (error.response && error.response.status === 404) {
           console.warn(`Flag not found for ${country}: 404 Not Found`);
         } else {
@@ -104,6 +105,5 @@ const fetchFallbackFlags = async (missingCountries) => {
       }
     }
   
-    return fallbackFlagMap;
+    return fallbackFlagMap; // Return the fallback flag map
   };
-  
