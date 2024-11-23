@@ -77,9 +77,9 @@ const CountryList = ({ onSelectCountry, onSearchChange }) => {
       <ul className="space-y-3">
         {countriesToDisplay.map((country) => {
           const population = Math.round(country.populationCounts?.[0]?.value || 0); // Get population or default to 0
-          let bgColor = 'bg-green-100'; // Default background color for low population
-          if (population > 1000000) bgColor = 'bg-yellow-100'; // Medium population threshold
-          if (population > 5000000) bgColor = 'bg-red-100'; // High population threshold
+          let bgColor = 'bg-green-200'; // Default background color for low population
+          if (population > 1000000) bgColor = 'bg-yellow-200'; // Medium population threshold
+          if (population > 5000000) bgColor = 'bg-red-200'; // High population threshold
 
           // Standardize the country name for flag lookup
           const standardizedCountryName =

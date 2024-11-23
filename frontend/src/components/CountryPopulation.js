@@ -119,9 +119,9 @@ const CountryPopulation = ({ onCountryClick }) => {
           const { name, flag, population } = country;
 
           // Set background color based on population size
-          let bgColor = 'bg-green-100';
-          if (population > 1000000) bgColor = 'bg-yellow-100';
-          if (population > 5000000) bgColor = 'bg-red-100';
+          let bgColor = 'bg-green-200';
+          if (population > 1000000) bgColor = 'bg-yellow-200';
+          if (population > 5000000) bgColor = 'bg-red-200';
 
           return (
             <li
