@@ -13,18 +13,28 @@ This project was developed as part of the Software Engineers – Second Intervie
 ### Dynamic Data Retrieval:
 
 - **Fetches city population and country flag data from REST APIs**.
+- **Supports flag retrieval using fallback APIs for missing data**.
+- **Integrates dynamic fetching based on city names in the "Country-City Population Data" view**.
 
 ### Search and Filter:
 
 - **Allows users to search cities and countries dynamically**.
+- **Filters data in real time based on user input**.
+
+### Data Export:
+
+- **Enables exporting population data as JSON or CSV**.
+- **Exports include dynamically fetched flags and handles missing data gracefully**.
 
 ### Interactive Visualization:
 
 - **Displays population data through a bar chart using Chart.js**.
+- **Chart updates dynamically based on user selection**.
 
 ### Modern Design:
 
 - **A clean, responsive UI for enhanced usability**.
+- **Interactive legends for population categorization**.
 
 ---
 
@@ -34,7 +44,8 @@ This project was developed as part of the Software Engineers – Second Intervie
 - **Styling**: Tailwind CSS  
 - **Data Visualization**: Chart.js and React-Chart.js-2  
 - **API Requests**: Axios  
-- **API Source**: Countries Now API  
+- **Primary API Source**: Countries Now API  
+- **Secondary API Source**: REST Countries API (for flag fallback) 
 
 ---
 
@@ -48,7 +59,12 @@ This project was developed as part of the Software Engineers – Second Intervie
 ### Country Flags
 - **Endpoint**: `https://countriesnow.space/api/v0.1/countries/flag/images`  
 - **Method**: GET  
-- **Purpose**: Fetches flag images for countries.  
+- **Purpose**: Fetches flag images for countries.
+
+### Fallback Flags
+- **Endpoint**: `https://restcountries.com/v3.1/name/{country}`  
+- **Method**: GET  
+- **Purpose**: Retrieves flag images for missing flags.  
 
 ---
 
@@ -102,6 +118,7 @@ The stakeholders needed a web app to display country and population data.
    Implemented API calls using Axios:
    - `getPopulationData`: Fetches population data for cities.
    - `getCountryFlags`: Retrieves flag images for countries.
+   - Fallback logic for missing flags via the REST Countries API.
 
 3. **Component Development**  
    **CountryList Component**:
@@ -114,8 +131,13 @@ The stakeholders needed a web app to display country and population data.
 4. **Interactive Design**  
    - Added a sticky chart to enhance usability.
    - Used Tailwind CSS for a clean and consistent design.
+   - Added dynamic legends with population categories.
 
-5. **Enhancements**  
+5. **Data Export Feature**  
+   - Implemented JSON and CSV download functionality.
+   - Included dynamically fetched flags in the exported data.
+
+6. **Enhancements**  
    - Added API error handling to gracefully manage issues.
    - Focused on modular and reusable components.
 
@@ -133,6 +155,10 @@ The stakeholders needed a web app to display country and population data.
 ### Population Chart
 - Provides an interactive bar chart for visualizing population data.
 - Updates dynamically based on user selection.
+
+### Data Export
+- Allows users to export population data in JSON or CSV formats.
+- Dynamically retrieves flags for cities in State 1 (Country-City Population Data).
 
 ---
 
@@ -157,11 +183,14 @@ The stakeholders needed a web app to display country and population data.
 ### User Authentication
 - Allow users to save favorite countries or cities.
 
-### Data Export
-- Enable exporting data as a CSV or PDF file.
+### Advanced Data Handling
+- Support additional data formats (e.g., XML or Excel).
 
-### Advanced Visualizations
+### Enhanced Visualizations
 - Add pie charts or line graphs for deeper insights.
+
+### Localization
+- Add multi-language support for a global audience.
 
 ---
 
