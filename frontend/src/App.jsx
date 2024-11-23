@@ -3,6 +3,7 @@ import CountryList from './components/CountryList';
 import CountryPopulation from './components/CountryPopulation';
 import PopulationChart from './components/PopulationChart';
 import CountryPopulationChart from './components/CountryPopulationChart';
+import { downloadAsJSON, downloadAsCSV } from './components/downloadUtils'; // Import functions
 
 const CompactLegend = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -62,52 +63,6 @@ const App = () => {
   const toggleView = () => {
     setShowCountryList((prevState) => !prevState);
     setSelectedData([]);
-  };
-
-  const downloadAsJSON = () => {
-    if (selectedData.length > 0) {
-      const data = showCountryList
-        ? {
-            city: selectedData[0]?.city || 'Unknown',
-            country: selectedData[0]?.country || 'Unknown',
-            population: selectedData[0]?.populationCounts?.[0]?.value || 'Unknown',
-          }
-        : {
-            name: selectedData[0]?.name || 'Unknown',
-            population: selectedData[0]?.population || 'Unknown',
-          };
-
-      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `${data.country || data.name}_data.json`;
-      a.click();
-      URL.revokeObjectURL(url);
-    } else {
-      alert('No data selected for download.');
-    }
-  };
-
-  const downloadAsCSV = () => {
-    if (selectedData.length > 0) {
-      const data = selectedData[0];
-      const csv = showCountryList
-        ? `City,Country,Population\n${data?.city || 'Unknown'},${data?.country || 'Unknown'},${
-            data?.populationCounts?.[0]?.value || 'Unknown'
-          }`
-        : `Name,Population\n${data?.name || 'Unknown'},${data?.population || 'Unknown'}`;
-
-      const blob = new Blob([csv], { type: 'text/csv' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `${data?.country || data?.name || 'Unknown'}_data.csv`;
-      a.click();
-      URL.revokeObjectURL(url);
-    } else {
-      alert('No data selected for download.');
-    }
   };
 
   return (
@@ -176,18 +131,17 @@ const App = () => {
             )}
           </div>
 
-          {/* Download Buttons */}
           <div className="mt-4 text-center" style={{ transform: 'translateX(-240px)' }}>
             <button
               className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mr-2 disabled:opacity-50"
-              onClick={downloadAsJSON}
+              onClick={() => downloadAsJSON(selectedData, showCountryList)}
               disabled={selectedData.length === 0}
             >
               Download as JSON
             </button>
             <button
               className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 disabled:opacity-50"
-              onClick={downloadAsCSV}
+              onClick={() => downloadAsCSV(selectedData, showCountryList)}
               disabled={selectedData.length === 0}
             >
               Download as CSV
