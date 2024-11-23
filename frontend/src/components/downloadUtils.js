@@ -5,25 +5,30 @@ export const downloadAsJSON = (selectedData, showCountryList) => {
       // Prepare the data object based on the current view (Country List or Country Population)
       const data = showCountryList
         ? {
-            // For "Country-City Population" view, include city, country, and population
+            // For "Country-City Population" view, include city, country, population, and flag
             city: selectedData[0]?.city || 'Unknown',
             country: selectedData[0]?.country || 'Unknown',
             population: selectedData[0]?.populationCounts?.[0]?.value || 'Unknown',
+            flag: selectedData[0]?.flag || 'No flag available',
           }
         : {
-            // For "Country Population" view, include name and population only
+            // For "Country Population" view, include name, population, and flag
             name: selectedData[0]?.name || 'Unknown',
             population: selectedData[0]?.population || 'Unknown',
+            flag: selectedData[0]?.flag || 'No flag available',
           };
   
       // Create a JSON file from the prepared data
       const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  
       // Generate a temporary URL for the file
       const url = URL.createObjectURL(blob);
+  
       // Create a temporary anchor element to trigger the download
       const a = document.createElement('a');
       a.href = url; // Set the file URL
       a.download = `${data.country || data.name}_data.json`; // Set the file name
+  
       a.click(); // Trigger the download
       URL.revokeObjectURL(url); // Clean up the temporary URL to free resources
     } else {
@@ -38,21 +43,27 @@ export const downloadAsJSON = (selectedData, showCountryList) => {
     if (selectedData.length > 0) {
       // Extract the first selected data item
       const data = selectedData[0];
+  
       // Prepare the CSV string based on the current view (Country List or Country Population)
       const csv = showCountryList
-        ? `City,Country,Population\n${data?.city || 'Unknown'},${data?.country || 'Unknown'},${
+        ? `City,Country,Population,Flag\n${data?.city || 'Unknown'},${data?.country || 'Unknown'},${
             data?.populationCounts?.[0]?.value || 'Unknown'
-          }`
-        : `Name,Population\n${data?.name || 'Unknown'},${data?.population || 'Unknown'}`;
+          },${data?.flag || 'No flag available'}`
+        : `Name,Population,Flag\n${data?.name || 'Unknown'},${data?.population || 'Unknown'},${
+            data?.flag || 'No flag available'
+          }`;
   
       // Create a CSV file from the prepared string
       const blob = new Blob([csv], { type: 'text/csv' });
+  
       // Generate a temporary URL for the file
       const url = URL.createObjectURL(blob);
+  
       // Create a temporary anchor element to trigger the download
       const a = document.createElement('a');
       a.href = url; // Set the file URL
       a.download = `${data?.country || data?.name || 'Unknown'}_data.csv`; // Set the file name
+  
       a.click(); // Trigger the download
       URL.revokeObjectURL(url); // Clean up the temporary URL to free resources
     } else {
