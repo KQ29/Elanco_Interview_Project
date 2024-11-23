@@ -54,7 +54,7 @@ const App = () => {
 
   // Styles for the animated gradient background
   const animatedBackgroundStyle = {
-    background: 'linear-gradient(135deg, #1D4ED8, #60A5FA, #3B82F6, #93C5FD)', // Gradient with lighter blues
+    background: 'linear-gradient(135deg, #1D4ED8, #60A5FA, #3B82F6, #2563EB, #93C5FD, #3B82F6, #1D4ED8)', // Gradient with lighter blues
     backgroundSize: '400% 100%',
     backgroundPosition: `${backgroundPosition}% 50%`, // Dynamically update position
   };
